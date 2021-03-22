@@ -42,12 +42,12 @@
 
 			mapSettings.coords = [latCoord, lngCoord];
 
-			latField.val(latCoord);
-			lngField.val(lngCoord);
 			updateBounds(init);
 
 			// Mark form as changed if this isn't initialisation
 			if (!init) {
+                latField.val(latCoord);
+                lngField.val(lngCoord);
 				$('.cms-edit-form').addClass('changed');
 			}
 		}

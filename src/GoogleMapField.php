@@ -156,8 +156,8 @@ class GoogleMapField extends FormField {
 				$this->recordFieldData('Longitude')
 			),
             'center' => array(
-                $this->getLatData() ?: $this->getOption('center.Latitude'),
-                $this->getLngData() ?: $this->getOption('center.Longitude'),
+                $this->recordFieldData('Latitude') ?: $this->getOption('center.Latitude'),
+                $this->recordFieldData('Longitude') ?: $this->getOption('center.Longitude'),
             ),
 			'map' => array(
 				'zoom' => $this->recordFieldData('Zoom') ?: $this->getOption('map.zoom'),
