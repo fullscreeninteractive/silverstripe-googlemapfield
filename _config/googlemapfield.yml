@@ -16,3 +16,6 @@ BetterBrief\GoogleMapField:
     default_field_values:
       Latitude: 30
       Longitude: 0
+    center:
+      Latitude: 30
+      Longitude: 0

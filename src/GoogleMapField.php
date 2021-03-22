@@ -155,6 +155,10 @@ class GoogleMapField extends FormField {
 				$this->recordFieldData('Latitude'),
 				$this->recordFieldData('Longitude')
 			),
+            'center' => array(
+                $this->getLatData() ?: $this->getOption('center.Latitude'),
+                $this->getLngData() ?: $this->getOption('center.Longitude'),
+            ),
 			'map' => array(
 				'zoom' => $this->recordFieldData('Zoom') ?: $this->getOption('map.zoom'),
 				'mapTypeId' => 'ROADMAP',
@@ -242,7 +246,7 @@ class GoogleMapField extends FormField {
 	 */
 	public function getLatData() {
 		$fieldNames = $this->getOption('field_names');
-		return $this->data->$fieldNames['Latitude'];
+		return $this->data->{$fieldNames['Latitude']};
 	}
 
 	/**
@@ -250,7 +254,7 @@ class GoogleMapField extends FormField {
 	 */
 	public function getLngData() {
 		$fieldNames = $this->getOption('field_names');
-		return $this->data->$fieldNames['Longitude'];
+		return $this->data->{$fieldNames['Longitude']};
 	}
 
 	/**

@@ -14,7 +14,7 @@
 		}
 		field.data('gmapfield-inited', true);
 		var settings = JSON.parse(field.attr('data-settings')),
-			centre = new google.maps.LatLng(settings.coords[0], settings.coords[1]),
+			centre = new google.maps.LatLng(settings.center[0], settings.center[1]),
 			mapSettings = {
 				streetViewControl: false,
 				zoom: settings.map.zoom * 1,
