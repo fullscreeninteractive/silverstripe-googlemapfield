@@ -19,3 +19,7 @@ BetterBrief\GoogleMapField:
     center:
       Latitude: 30
       Longitude: 0
+    # optional possibility to show some of the fields
+    #visible_fields:
+    #  - Latitude
+    #  - Longitude

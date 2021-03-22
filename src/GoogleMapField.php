@@ -102,44 +102,43 @@ class GoogleMapField extends FormField {
 	 */
 	public function setupChildren() {
 		$name = $this->getName();
+        $visibleFields = $this->getOption('visible_fields');
+        $getFieldType = function($field) use ($visibleFields) {
+            return $visibleFields && is_array($visibleFields) && in_array($field, $visibleFields)
+                ? TextField::class
+                : HiddenField::class;
+        };
 
-		// Create the latitude/longitude hidden fields
-		$this->latField = HiddenField::create(
-			$name.'[Latitude]',
-			'Lat',
-			$this->recordFieldData('Latitude')
-		)->addExtraClass('googlemapfield-latfield no-change-track');
+        // Create the latitude/longitude hidden fields
+        $this->latField = $getFieldType('Latitude')::create(
+            $name.'[Latitude]',
+            'Lat',
+            $this->recordFieldData('Latitude')
+        )->addExtraClass('googlemapfield-latfield no-change-track mb-2');
 
-		$this->lngField = HiddenField::create(
-			$name.'[Longitude]',
-			'Lng',
-			$this->recordFieldData('Longitude')
-		)->addExtraClass('googlemapfield-lngfield no-change-track');
+        $this->lngField = $getFieldType('Longitude')::create(
+            $name.'[Longitude]',
+            'Lng',
+            $this->recordFieldData('Longitude')
+        )->addExtraClass('googlemapfield-lngfield no-change-track mb-2');
 
-		$this->zoomField = HiddenField::create(
-			$name.'[Zoom]',
-			'Zoom',
-			$this->recordFieldData('Zoom')
-		)->addExtraClass('googlemapfield-zoomfield no-change-track');
-		$this->boundsField = HiddenField::create(
-			$name.'[Bounds]',
-			'Bounds',
-			$this->recordFieldData('Bounds')
-		)->addExtraClass('googlemapfield-boundsfield no-change-track');
-		$this->children = new FieldList(
-			$this->latField,
-			$this->lngField,
-			$this->zoomField,
-			$this->boundsField
-		);
+        $this->zoomField = $getFieldType('Zoom')::create(
+            $name.'[Zoom]',
+            'Zoom',
+            $this->recordFieldData('Zoom')
+        )->addExtraClass('googlemapfield-zoomfield no-change-track mb-2');
 
-		if($this->options['show_search_box']) {
-			$this->children->push(
-				TextField::create('Search')
-				->addExtraClass('googlemapfield-searchfield')
-				->setAttribute('placeholder', 'Search for a location')
-			);
-		}
+        $this->boundsField = $getFieldType('Bounds')::create(
+            $name.'[Bounds]',
+            'Bounds',
+            $this->recordFieldData('Bounds')
+        )->addExtraClass('googlemapfield-boundsfield no-change-track mb-2');
+        $this->children = new FieldList(
+            $this->latField,
+            $this->lngField,
+            $this->zoomField,
+            $this->boundsField
+        );
 
 		return $this->children;
 	}
