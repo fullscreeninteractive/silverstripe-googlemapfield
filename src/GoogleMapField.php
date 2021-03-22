@@ -133,12 +133,21 @@ class GoogleMapField extends FormField {
             'Bounds',
             $this->recordFieldData('Bounds')
         )->addExtraClass('googlemapfield-boundsfield no-change-track mb-2');
-        $this->children = new FieldList(
+        
+		$this->children = new FieldList(
             $this->latField,
             $this->lngField,
             $this->zoomField,
             $this->boundsField
         );
+
+		if($this->options['show_search_box']) {
+			$this->children->push(
+				TextField::create('Search')
+				->addExtraClass('googlemapfield-searchfield')
+				->setAttribute('placeholder', 'Search for a location')
+			);
+		}
 
 		return $this->children;
 	}
