@@ -52,7 +52,7 @@ class GoogleMapField extends CompositeField
     /**
      * @var TextField
      */
-    protected $searchBox;
+    protected $searchField;
 
     /**
      * The merged version of the default and user specified options
@@ -87,27 +87,25 @@ class GoogleMapField extends CompositeField
     }
 
 
+    public function hasData()
+    {
+        return true;
+    }
+
+
     public function setValue($value, $data = null)
     {
-        $this->latField->setValue(
-            $value['Latitude']
-        );
-
-        $this->lngField->setValue(
-            $value['Longitude']
-        );
-
-        $this->zoomField->setValue(
-            $value['Zoom']
-        );
-
-        $this->boundsField->setValue(
-            $value['Bounds']
-        );
-
         if ($data) {
             $this->setDataRecord($data);
+        } else if (!$this->children->count()) {
+            $this->setupChildren();
         }
+
+        $this->latField->setValue($value['Latitude'] ?? '', $data);
+        $this->lngField->setValue($value['Longitude'] ?? '', $data);
+        $this->zoomField->setValue($value['Zoom'] ?? '', $data);
+        $this->boundsField->setValue($value['Bounds'] ?? '', $data);
+        $this->searchField->setValue($value['Search'] ?? '', $data);
 
         return parent::setValue($value, $data);
     }
@@ -178,12 +176,12 @@ class GoogleMapField extends CompositeField
         $this->children->push($this->zoomField);
         $this->children->push($this->boundsField);
 
-        $this->searchBox = TextField::create($name . '[Search]', $this->Title, $this->recordFieldData('Search'))
+        $this->searchField = TextField::create($name . '[Search]', $this->Title, $this->recordFieldData('Search'))
             ->addExtraClass('googlemapfield-searchfield')
             ->setAttribute('placeholder', 'Search for a location');
 
         if ($this->options['show_search_box']) {
-            $this->children->push($this->searchBox);
+            $this->children->push($this->searchField);
         }
 
         return $this;
