@@ -36,6 +36,18 @@ class SubmittedGoogleMapField extends SubmittedFormField
     }
 
 
+    public function getSearchValue()
+    {
+        if ($this->Value) {
+            $data = json_decode($this->Value);
+
+            return $data->Search;
+        }
+
+        return '';
+    }
+
+
     /**
      *
      */
