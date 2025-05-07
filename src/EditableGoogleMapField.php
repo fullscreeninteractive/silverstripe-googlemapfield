@@ -6,6 +6,10 @@ use SilverStripe\UserForms\Model\EditableFormField;
 
 class EditableGoogleMapField extends EditableFormField
 {
+    private static $singular_name = 'Google Map Field';
+
+    private static $plural_name = 'Google Map Fields';
+    
     public function getFormField()
     {
         $field = new GoogleMapField($this->Name, $this->Title ?: false, $this->Default);
