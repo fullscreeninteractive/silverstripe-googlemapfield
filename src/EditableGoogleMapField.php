@@ -2,6 +2,9 @@
 
 namespace BetterBrief;
 
+use SilverStripe\Forms\FieldGroup;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\TextField;
 use SilverStripe\UserForms\Model\EditableFormField;
 
 class EditableGoogleMapField extends EditableFormField
@@ -9,10 +12,44 @@ class EditableGoogleMapField extends EditableFormField
     private static $singular_name = 'Google Map Field';
 
     private static $plural_name = 'Google Map Fields';
-    
+
+    private static $db = [
+        'DefaultLat' => 'Float',
+        'DefaultLng' => 'Float',
+        'Zoom' => 'Int',
+    ];
+
+    private static $table_name = 'EditableGoogleMapField';
+
+
+    public function getCMSFields()
+    {
+        $this->beforeUpdateCMSFields(function (FieldList $fields) {
+            $fields->removeByName('Default');
+            $fields->addFieldsToTab(
+                'Root.Main',
+                [
+                    FieldGroup::create([
+                        TextField::create('DefaultLat', _t(__CLASS__ . '.DEFAULT_LAT', 'Default Latitude'))
+                            ->setDescription(_t(__CLASS__ . '.DEFAULT_LAT_DESCRIPTION', 'The default latitude for the map')),
+                        TextField::create('DefaultLng', _t(__CLASS__ . '.DEFAULT_LNG', 'Default Longitude'))
+                            ->setDescription(_t(__CLASS__ . '.DEFAULT_LNG_DESCRIPTION', 'The default longitude for the map'))
+                    ]),
+                    TextField::create('Zoom', _t(__CLASS__ . '.ZOOM', 'Zoom Level'))
+                        ->setDescription(_t(__CLASS__ . '.ZOOM_DESCRIPTION', 'The default zoom level for the map')),
+                ]
+            );
+        });
+        return parent::getCMSFields();
+    }
+
     public function getFormField()
     {
-        $field = new GoogleMapField($this->Name, $this->Title ?: false, $this->Default);
+        $field = new GoogleMapField($this->Name, $this->Title ?: false, null, [
+            'Latitude' => $this->DefaultLat ?: 0,
+            'Longitude' => $this->DefaultLng ?: 0,
+            'Zoom' => $this->Zoom ?: 0,
+        ]);
 
         $this->doUpdateFormField($field);
 
@@ -30,5 +67,4 @@ class EditableGoogleMapField extends EditableFormField
     {
         return SubmittedGoogleMapField::create();
     }
-
 }

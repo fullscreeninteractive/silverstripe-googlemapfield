@@ -29,6 +29,7 @@ class GoogleMapField extends CompositeField
 
     protected $data;
 
+    protected $defaultValues = [];
     /**
      * @var FormField
      */
@@ -71,6 +72,7 @@ class GoogleMapField extends CompositeField
 
         if ($data) {
             $this->setDataRecord($data);
+            $this->defaultValues = $data;
         }
 
         $this->setupChildren();
@@ -82,7 +84,6 @@ class GoogleMapField extends CompositeField
     {
         $this->data = $data;
         $this->setupChildren();
-
         return $this;
     }
 
@@ -289,7 +290,11 @@ class GoogleMapField extends CompositeField
 
     public function getDefaultValue($name)
     {
-        $fieldValues = $this->getOption('default_field_values');
+        $fieldValues = $this->defaultValues;
+
+        if (empty($defaultValues)) {
+            $fieldValues = $this->getOption('default_field_values');
+        }
 
         return isset($fieldValues[$name]) ? $fieldValues[$name] : null;
     }
@@ -348,5 +353,31 @@ class GoogleMapField extends CompositeField
         }
 
         return $this;
+    }
+
+    public function validate($validator)
+    {
+        $lat = $this->latField->dataValue();
+        $lng = $this->lngField->dataValue();
+
+        // If the lat/lng fields are the same as the default values, we don't need to validate
+        if ($lat == $this->getDefaultValue('Latitude') && $lng == $this->getDefaultValue('Longitude')) {
+            return false;
+        }
+
+        if ($this->Required() && (!$lat || !$lng) && !$this->searchField->dataValue()) {
+            $name = strip_tags($this->Title() ? $this->Title() : $this->getName());
+            $validator->validationError(
+                $this->name,
+                _t(
+                    'BetterBrief\\GoogleMapField.VALIDATEMISSING',
+                    '{name} is required',
+                    ['name' => $name]
+                ),
+                "validation"
+            );
+            return false;
+        }
+        return true;
     }
 }
