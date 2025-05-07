@@ -2,9 +2,19 @@
  * GoogleMapField.js
  * @author <@willmorgan>
  */
-(function ($) {
-    var gmapsAPILoaded = false;
 
+let gmapsAPILoaded = false;
+let gmapsReady = null;
+
+window.googlemapfieldInit = function () {
+    gmapsAPILoaded = true;
+
+    if (gmapsReady !== null) {
+        gmapsReady();
+    }
+};
+
+(function ($) {
     // Run this code for every googlemapfield
     function initField() {
         var field = $(this);
@@ -188,14 +198,9 @@
 
     function init() {
         var mapFields = $(".googlemapfield:visible").gmapfield();
+
         mapFields.each(initField);
     }
-
-    // Export the init function
-    window.googlemapfieldInit = function () {
-        gmapsAPILoaded = true;
-        init();
-    };
 
     // CMS stuff: set the init method to re-run if the page is saved or pjaxed
     // there are no docs for the CMS implementation of entwine, so this is hacky
@@ -222,4 +227,12 @@
             });
         })();
     }
+
+    if (gmapsAPILoaded) {
+        init();
+    }
+
+    gmapsReady = function () {
+        init();
+    };
 })(jQuery);
