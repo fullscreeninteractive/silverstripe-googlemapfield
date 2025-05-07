@@ -243,7 +243,7 @@ class GoogleMapField extends CompositeField
 
         Requirements::css('betterbrief/silverstripe-googlemapfield: client/css/GoogleMapField.css');
         Requirements::javascript('betterbrief/silverstripe-googlemapfield: client/js/GoogleMapField.js');
-        Requirements::javascript('//maps.googleapis.com/maps/api/js?' . http_build_query($gmapsParams));
+        Requirements::javascript('//maps.googleapis.com/maps/api/js?' . str_replace('&amp;', '&', http_build_query($gmapsParams)));
     }
 
 
@@ -302,7 +302,9 @@ class GoogleMapField extends CompositeField
     {
         // Quicker execution path for "."-free names
         if (strpos($name, '.') === false) {
-            if (isset($this->options[$name])) return $this->options[$name];
+            if (isset($this->options[$name])) {
+                return $this->options[$name];
+            }
         } else {
             $names = explode('.', $name);
 
