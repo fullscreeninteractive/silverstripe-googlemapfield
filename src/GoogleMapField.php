@@ -55,6 +55,10 @@ class GoogleMapField extends CompositeField
      */
     protected $searchField;
 
+    protected ?string $restrictToCountry = null;
+
+    protected string $restrictToTypes = '';
+
     /**
      * The merged version of the default and user specified options
      * @var array
@@ -194,24 +198,23 @@ class GoogleMapField extends CompositeField
      * @see https://developers.google.com/maps/documentation/javascript/reference
      * {@inheritdoc}
      */
-    public function Field($properties = array())
+    public function Field($properties = [])
     {
-        $jsOptions = array(
-            'coords' => array(
+        $jsOptions = [
+            'coords' => [
                 $this->recordFieldData('Latitude'),
                 $this->recordFieldData('Longitude')
-            ),
-            'center' => array(
+            ],
+            'center' => [
                 $this->recordFieldData('Latitude') ?: $this->getOption('center.Latitude'),
                 $this->recordFieldData('Longitude') ?: $this->getOption('center.Longitude'),
-            ),
-            'map' => array(
+            ],
+            'map' => [
                 'zoom' => $this->recordFieldData('Zoom') ?: $this->getOption('map.zoom'),
                 'mapTypeId' => 'ROADMAP',
-            ),
-        );
+            ],
+        ];
 
-        $jsOptions = array_replace_recursive($jsOptions, $this->options);
         $this->setAttribute('data-settings', json_encode($jsOptions));
         $this->requireDependencies();
 
@@ -297,6 +300,63 @@ class GoogleMapField extends CompositeField
         }
 
         return isset($fieldValues[$name]) ? $fieldValues[$name] : null;
+    }
+
+
+    public function getLatField(): ?TextField
+    {
+        return $this->latField;
+    }
+
+
+    public function getLngField(): ?TextField
+    {
+        return $this->lngField;
+    }
+
+
+    public function getZoomField(): ?TextField
+    {
+        return $this->zoomField;
+    }
+
+
+    public function getBoundsField(): ?TextField
+    {
+        return $this->boundsField;
+    }
+
+    public function getSearchField(): ?TextField
+    {
+        return $this->searchField;
+    }
+
+
+    public function getRestrictToCountry(): ?string
+    {
+        return $this->restrictToCountry;
+    }
+
+
+    public function setRestrictToCountry(?string $country)
+    {
+        $this->restrictToCountry = $country;
+
+        return $this;
+    }
+
+
+    public function getRestrictToTypes(): string
+    {
+        return $this->restrictToTypes;
+    }
+
+
+    public function setRestrictToTypes(string $types)
+    {
+        $this->restrictToTypes = $types;
+
+        return $this;
     }
 
 

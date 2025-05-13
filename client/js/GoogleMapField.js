@@ -25,30 +25,36 @@ window.googlemapfieldInit = function () {
 
         field.data("gmapfield-inited", true);
 
-        var settings = JSON.parse(field.attr("data-settings")),
-            centre = new google.maps.LatLng(
-                settings.center[0],
-                settings.center[1]
-            ),
-            mapSettings = {
-                streetViewControl: false,
-                zoom: settings.map.zoom * 1,
-                center: centre,
-                mapTypeId: google.maps.MapTypeId[settings.map.mapTypeId],
-            },
-            mapElement = field.find(".googlemapfield-map"),
-            map = new google.maps.Map(mapElement[0], mapSettings),
-            marker = new google.maps.Marker({
-                position: map.getCenter(),
-                map: map,
-                title: "Position",
-                draggable: true,
-            }),
-            latField = field.find(".googlemapfield-latfield"),
-            lngField = field.find(".googlemapfield-lngfield"),
-            zoomField = field.find(".googlemapfield-zoomfield"),
-            boundsField = field.find(".googlemapfield-boundsfield"),
-            search = field.find(".googlemapfield-searchfield");
+        var settings = JSON.parse(field.attr("data-settings"));
+
+        const centre = new google.maps.LatLng(
+            settings.center[0],
+            settings.center[1]
+        );
+
+        const mapSettings = {
+            streetViewControl: false,
+            zoom: settings.map.zoom * 1,
+            center: centre,
+            mapTypeId: google.maps.MapTypeId[settings.map.mapTypeId],
+        };
+
+        const mapElement = field.find(".googlemapfield-map");
+
+        const map = new google.maps.Map(mapElement[0], mapSettings);
+
+        const marker = new google.maps.Marker({
+            position: map.getCenter(),
+            map: map,
+            title: "Position",
+            draggable: true,
+        });
+
+        const latField = field.find(".googlemapfield-latfield");
+        const lngField = field.find(".googlemapfield-lngfield");
+        const zoomField = field.find(".googlemapfield-zoomfield");
+        const boundsField = field.find(".googlemapfield-boundsfield");
+        const search = field.find(".googlemapfield-searchfield");
 
         // Update the hidden fields and mark as changed
         function updateField(latLng, init) {
@@ -130,6 +136,32 @@ window.googlemapfieldInit = function () {
                 search.get(0)
             );
 
+            const restrictions = {};
+
+            if (field.data("restrict-country")) {
+                restrictions.country = field
+                    .data("restrict-country")
+                    .split(",")
+                    .map((country) => {
+                        return country.trim();
+                    });
+            }
+
+            if (field.data("restrict-types")) {
+                restrictions.types = field
+                    .data("restrict-types")
+                    .split(",")
+                    .map((type) => {
+                        return type.trim();
+                    });
+            }
+
+            console.log(restrictions);
+
+            if (Object.keys(restrictions).length) {
+                autocomplete.setComponentRestrictions(restrictions);
+            }
+
             geolocate();
 
             // When the user selects an address from the dropdown, populate the address
@@ -138,8 +170,8 @@ window.googlemapfieldInit = function () {
                 var place = autocomplete.getPlace();
 
                 if (place) {
+                    // chck to see if the
                     search.val(place.formatted_address);
-
                     marker.setPosition(place.geometry.location);
                     updateField(place.geometry.location, false);
                     centreOnMarker();
@@ -173,6 +205,26 @@ window.googlemapfieldInit = function () {
 
             if (lngField) {
                 lngField.val(evt.latLng.lng().toFixed(5));
+            }
+
+            // if the googlemapfield-updateaddress input is checked then update the address
+            if (
+                field.find(".googlemapfield-updateaddress input").is(":checked")
+            ) {
+                // find the nearest address
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode(
+                    { latLng: evt.latLng },
+                    function (results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            if (results[0]) {
+                                search.val(results[0].formatted_address);
+                            }
+                        } else {
+                            console.warn("Geocoding failed: " + status);
+                        }
+                    }
+                );
             }
         });
 
