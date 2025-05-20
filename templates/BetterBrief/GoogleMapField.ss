@@ -7,7 +7,7 @@
 
     <div class="googlemapfield-map"></div>
     <div class="googlemapfield-updateaddress">
-        <input type="checkbox" class="googlemapfield-toggle" id="updateaddress-{$ID}" />
+        <input type="checkbox" class="googlemapfield-toggle" id="updateaddress-{$ID}" checked />
         <label for="updateaddress-{$ID}">
             Update address as you drag the marker?
         </label>

@@ -104,22 +104,6 @@ window.googlemapfieldInit = function () {
             centreOnMarker();
         }
 
-        function geolocate() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var geolocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    };
-                    var circle = new google.maps.Circle({
-                        center: geolocation,
-                        radius: position.coords.accuracy,
-                    });
-                    autocomplete.setBounds(circle.getBounds());
-                });
-            }
-        }
-
         function geoSearchComplete(result, status) {
             if (status !== google.maps.GeocoderStatus.OK) {
                 console.warn("Geocoding search failed");
@@ -156,13 +140,9 @@ window.googlemapfieldInit = function () {
                     });
             }
 
-            console.log(restrictions);
-
             if (Object.keys(restrictions).length) {
                 autocomplete.setComponentRestrictions(restrictions);
             }
-
-            geolocate();
 
             // When the user selects an address from the dropdown, populate the address
             // fields in the form.
