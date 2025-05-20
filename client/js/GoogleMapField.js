@@ -76,6 +76,7 @@ window.googlemapfieldInit = function () {
 
         function updateZoom(init) {
             zoomField.val(map.getZoom());
+
             // Mark form as changed if this isn't initialisation
             if (!init) {
                 $(".cms-edit-form").addClass("changed");
@@ -101,7 +102,28 @@ window.googlemapfieldInit = function () {
         function mapClicked(ev) {
             var center = ev.latLng;
             marker.setPosition(center);
+
             centreOnMarker();
+
+            // update the address field if the checkbox is checked
+            if (
+                field.find(".googlemapfield-updateaddress input").is(":checked")
+            ) {
+                // find the nearest address
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode(
+                    { latLng: center },
+                    function (results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            if (results[0]) {
+                                search.val(results[0].formatted_address);
+                            }
+                        } else {
+                            console.warn("Geocoding failed: " + status);
+                        }
+                    }
+                );
+            }
         }
 
         function geoSearchComplete(result, status) {
