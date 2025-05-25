@@ -99,33 +99,6 @@ window.googlemapfieldInit = function () {
             updateField(center);
         }
 
-        function mapClicked(ev) {
-            var center = ev.latLng;
-            marker.setPosition(center);
-
-            centreOnMarker();
-
-            // update the address field if the checkbox is checked
-            if (
-                field.find(".googlemapfield-updateaddress input").is(":checked")
-            ) {
-                // find the nearest address
-                var geocoder = new google.maps.Geocoder();
-                geocoder.geocode(
-                    { latLng: center },
-                    function (results, status) {
-                        if (status == google.maps.GeocoderStatus.OK) {
-                            if (results[0]) {
-                                search.val(results[0].formatted_address);
-                            }
-                        } else {
-                            console.warn("Geocoding failed: " + status);
-                        }
-                    }
-                );
-            }
-        }
-
         function geoSearchComplete(result, status) {
             if (status !== google.maps.GeocoderStatus.OK) {
                 console.warn("Geocoding search failed");
@@ -171,7 +144,7 @@ window.googlemapfieldInit = function () {
             autocomplete.addListener("place_changed", function () {
                 var place = autocomplete.getPlace();
 
-                if (place) {
+                if (place && place.geometry) {
                     // chck to see if the
                     search.val(place.formatted_address);
                     marker.setPosition(place.geometry.location);
@@ -184,8 +157,10 @@ window.googlemapfieldInit = function () {
         function searchReady(ev) {
             ev.preventDefault();
             ev.stopPropagation();
-            var searchText = search.val(),
-                geocoder;
+
+            let searchText = search.val();
+            let geocoder;
+
             if (searchText) {
                 geocoder = new google.maps.Geocoder();
                 geocoder.geocode({ address: searchText }, geoSearchComplete);
@@ -229,8 +204,6 @@ window.googlemapfieldInit = function () {
                 );
             }
         });
-
-        google.maps.event.addListener(map, "click", mapClicked);
 
         google.maps.event.addListener(map, "zoom_changed", zoomChanged);
 
