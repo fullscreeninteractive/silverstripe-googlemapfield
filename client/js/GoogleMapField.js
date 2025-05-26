@@ -108,32 +108,32 @@ window.googlemapfieldInit = function () {
             centreOnMarker();
         }
 
+        const restrictions = {};
+
+        if (field.data("restrict-country")) {
+            restrictions.country = field
+                .data("restrict-country")
+                .split(",")
+                .map((country) => {
+                    return country.trim();
+                });
+        }
+
+        if (field.data("restrict-types")) {
+            restrictions.types = field
+                .data("restrict-types")
+                .split(",")
+                .map((type) => {
+                    return type.trim();
+                });
+        }
+
         if (search) {
             // Create the autocomplete object, restricting the search to geographical
             // location types.
             var autocomplete = new google.maps.places.Autocomplete(
                 search.get(0)
             );
-
-            const restrictions = {};
-
-            if (field.data("restrict-country")) {
-                restrictions.country = field
-                    .data("restrict-country")
-                    .split(",")
-                    .map((country) => {
-                        return country.trim();
-                    });
-            }
-
-            if (field.data("restrict-types")) {
-                restrictions.types = field
-                    .data("restrict-types")
-                    .split(",")
-                    .map((type) => {
-                        return type.trim();
-                    });
-            }
 
             if (Object.keys(restrictions).length) {
                 autocomplete.setComponentRestrictions(restrictions);
@@ -143,7 +143,7 @@ window.googlemapfieldInit = function () {
             // fields in the form.
             autocomplete.addListener("place_changed", function () {
                 var place = autocomplete.getPlace();
-
+                console.log("place changed", { place, restrictions });
                 if (place && place.geometry) {
                     // chck to see if the
                     search.val(place.formatted_address);
@@ -152,19 +152,6 @@ window.googlemapfieldInit = function () {
                     centreOnMarker();
                 }
             });
-        }
-
-        function searchReady(ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-
-            let searchText = search.val();
-            let geocoder;
-
-            if (searchText) {
-                geocoder = new google.maps.Geocoder();
-                geocoder.geocode({ address: searchText }, geoSearchComplete);
-            }
         }
 
         // Populate the fields to the current centre
@@ -190,6 +177,7 @@ window.googlemapfieldInit = function () {
             ) {
                 // find the nearest address
                 var geocoder = new google.maps.Geocoder();
+
                 geocoder.geocode(
                     { latLng: evt.latLng },
                     function (results, status) {
@@ -206,15 +194,6 @@ window.googlemapfieldInit = function () {
         });
 
         google.maps.event.addListener(map, "zoom_changed", zoomChanged);
-
-        search.on({
-            change: searchReady,
-            keydown: function (ev) {
-                if (ev.which == 13) {
-                    searchReady(ev);
-                }
-            },
-        });
     }
 
     $.fn.gmapfield = function () {
