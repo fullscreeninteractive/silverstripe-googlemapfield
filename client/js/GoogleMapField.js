@@ -99,6 +99,35 @@ window.googlemapfieldInit = function () {
             updateField(center);
         }
 
+        function mapClicked(ev) {
+            var center = ev.latLng;
+            marker.setPosition(center);
+
+            centreOnMarker();
+
+            // update the address field if the checkbox is checked
+            if (
+                field.find(".googlemapfield-updateaddress input").is(":checked")
+            ) {
+                // find the nearest address
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode(
+                    { latLng: center },
+                    function (results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            if (results[0]) {
+                                search.val(results[0].formatted_address);
+                            }
+                        } else {
+                            console.warn("Geocoding failed: " + status);
+                        }
+                    }
+                );
+            }
+        }
+
+        google.maps.event.addListener(map, "click", mapClicked);
+
         function geoSearchComplete(result, status) {
             if (status !== google.maps.GeocoderStatus.OK) {
                 console.warn("Geocoding search failed");
